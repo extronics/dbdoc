@@ -73,8 +73,8 @@
 	</target>
 
 	<target name="dist" depends="build">
-		<!--<delete dir="${distDir}" />
-		<mkdir dir="${distDir}" />-->
+		<delete dir="${distDir}" />
+		<mkdir dir="${distDir}" />
 		<mkdir dir="${distDir}/lib" />
 		<mkdir dir="${distDir}/resources" />
 		<jar destfile="${distDir}/lib/dbdoc.jar" basedir="${compileDir}" />
@@ -93,5 +93,23 @@
 				<include name="dbdoc" />
 			</fileset>
 		</copy>
+		<zip destfile="${distDir}/dbdoc.zip">
+			<zipfileset dir="${distDir}" includes="**/*" prefix="dbdoc">
+				<exclude name="dbdoc.tar.gz" />
+				<exclude name="dbdoc.zip" />
+			</zipfileset>
+			<zipfileset dir="${distDir}" prefix="dbdoc" filemode="777">
+				<include name="dbdoc" />
+			</zipfileset>
+		</zip>
+		<tar destfile="${distDir}/dbdoc.tar.gz" compression="gzip">
+			<tarfileset dir="${distDir}" includes="**/*" prefix="dbdoc">
+				<exclude name="dbdoc.tar.gz" />
+				<exclude name="dbdoc.zip" />
+			</tarfileset>
+			<tarfileset dir="${distDir}" prefix="dbdoc" filemode="777">
+				<include name="dbdoc" />
+			</tarfileset>
+		</tar>
 	</target>
 </project>
