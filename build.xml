@@ -1,0 +1,97 @@
+<project name="dbdoc" default="build" basedir=".">
+	<property name="buildDir" value="build" />
+	<property name="distDir" value="${buildDir}/dist" />
+	<property name="compileDir" value="${buildDir}/classes" />
+	<property name="testCompileDir" value="${buildDir}/testclasses" />
+	<property name="srcDir" value="src" />
+	<property name="resourcesDir" value="resources" />
+	<property name="libDir" value="lib" />
+	<property name="testSrcDir" value="test" />
+
+	<path id="classpath">
+		<fileset dir="lib">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement path="${compileDir}" />
+		<pathelement path="${testCompileDir}" />
+		<pathelement path="${resourcesDir}" />
+	</path>
+
+	<target name="init">
+		<mkdir dir="${buildDir}" />
+		<mkdir dir="${compileDir}" />
+		<mkdir dir="${testCompileDir}" />
+		<copy todir="${compileDir}">
+			<fileset dir="${srcDir}">
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="clean">
+		<delete dir="${buildDir}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${srcDir}" destdir="${compileDir}" includeantruntime="false">
+			<classpath refid="classpath" />
+		</javac>
+		<javac srcdir="${testSrcDir}" destdir="${testCompileDir}" includeantruntime="false">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="test" depends="compile">
+		<junit>
+			<classpath refid="classpath" />
+			<batchtest>
+				<formatter type="plain" usefile="false"/>
+				<fileset dir="test">
+					<include name="**/Test*.java" />
+					<exclude name="dbdoc/TestCase.java" />
+					<exclude name="dbdoc/impl/**" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="test-mysql" depends="compile">
+		<junit>
+			<classpath refid="classpath" />
+			<batchtest>
+				<formatter type="plain" usefile="false"/>
+				<fileset dir="test">
+					<include name="dbdoc/impl/mysql/MySQLTestSuite.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="build" depends="compile">
+		<echo>Build completed</echo>
+	</target>
+
+	<target name="dist" depends="build">
+		<!--<delete dir="${distDir}" />
+		<mkdir dir="${distDir}" />-->
+		<mkdir dir="${distDir}/lib" />
+		<mkdir dir="${distDir}/resources" />
+		<jar destfile="${distDir}/lib/dbdoc.jar" basedir="${compileDir}" />
+		<copy todir="${distDir}/resources">
+			<fileset dir="${resourcesDir}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${distDir}/lib">
+			<fileset dir="${libDir}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${distDir}">
+			<fileset dir="${basedir}">
+				<include name="dbdoc" />
+			</fileset>
+		</copy>
+	</target>
+</project>

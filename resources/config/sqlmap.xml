@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<settings cacheModelsEnabled="false" enhancementEnabled="false"
+		lazyLoadingEnabled="false" maxRequests="128" maxSessions="10"
+		maxTransactions="5" useStatementNamespaces="true"
+		defaultStatementTimeout="5" statementCachingEnabled="true"
+		classInfoCacheEnabled="true" />
+		
+	<typeHandler javaType="dbdoc.reflect.StatementType" callback="dbdoc.impl.StatementTypeHandler"/>
+	<typeHandler javaType="dbdoc.reflect.Timing" callback="dbdoc.impl.TimingTypeHandler"/>
+
+	<transactionManager type="JDBC">
+		<dataSource type="SIMPLE">
+			<property name="JDBC.Driver" value="${db.driver}" />
+			<property name="JDBC.ConnectionURL" value="${db.url}" />
+			<property name="JDBC.Username" value="${db.username}" />
+			<property name="JDBC.Password" value="${db.password}" />
+			<property name="JDBC.DefaultAutoCommit" value="true" />
+			<property name="Pool.MaximumActiveConnections" value="10" />
+			<property name="Pool.MaximumIdleConnections" value="5" />
+			<property name="Pool.MaximumCheckoutTime" value="120000" />
+			<property name="Pool.TimeToWait" value="500" />
+		</dataSource>
+	</transactionManager>
+
+	<sqlMap resource="${db.sql}" />
+</sqlMapConfig>

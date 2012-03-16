@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd $(dirname $0)
+
+DBDOC_CLASSPATH=$(for i in lib/*.jar ; do echo -n $i: ; done)
+DBDOC_CLASSPATH="$DBDOC_CLASSPATH:resources"
+
+java -classpath "$DBDOC_CLASSPATH" dbdoc.Launcher $@

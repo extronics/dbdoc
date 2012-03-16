@@ -1,0 +1,191 @@
+body {
+	font-family:serif;
+	font-size:0.84em;
+}
+
+h1, h2, h3 {
+	font-family:sans-serif;
+}
+
+a {
+        color:#1e4b76;
+}
+
+a:hover {
+        text-decoration:none;
+}
+
+ul li {
+	list-style-image: url(bullet.png);
+}
+
+#main h1, #table h1, #proc h1 {
+        font-size:1.6em;
+        color: #00375e;
+        font-weight:bold;
+        border-bottom: 1px #dedede solid;
+}
+
+#main h2, #table h2, #proc h2 {
+        font-size:1.3em;
+        color: #000000;
+        font-weight:bold;
+        border-bottom: 1px #dedede solid;
+}
+
+#main h3, #table h3, #proc h3 {
+        font-size:1.2em;
+        color: #000000;
+        font-weight:bold;
+}
+
+ul.path {
+	margin:0p;
+	padding:0px;
+}
+
+ul.path li {
+	float:left;
+	margin: 0px 0px 10px 30px;
+}
+
+ul.path li.database {
+	list-style-image: url(db.png);
+}
+
+ul.path li.table {
+	list-style-image: url(table.png);
+}
+
+ul.path li.procedure {
+	list-style-image: url(proc.png);
+}
+
+#toc {
+	border: 1px #ccc solid;
+	background: #fafafa;
+}
+
+#table h1, #proc h1 {
+	clear:both;
+}
+
+/*
+ * Menu
+ */
+#menu h1 {
+	font-size:1.1em;
+	font-weight:bold;
+	padding-left:25px;
+	background: url(db_big.png) no-repeat;
+}
+
+#menu h2 {
+	font-size:1em;
+	font-weight:bold;
+}
+
+#menu ul {
+	margin:0px 0px 0px 30px;
+	padding:0px;
+}
+
+#menu ul li.schema {
+	
+}
+
+#menu ul li.table {
+	list-style-image: url(table.png);	
+}
+
+#menu ul li.procedure {
+	list-style-image: url(proc.png);
+}
+
+/*
+ * Main
+ */
+#main table {
+	width: 100%; 
+}
+
+#main table th {
+	padding: 5px;
+	margin: 0px;
+	width: 1%;
+	border: 1px #ccc solid;
+	text-align:left;
+}
+
+#main table td {
+	padding: 5px;
+	margin: 0px;
+	border: 1px #ccc solid;
+}
+
+/*
+ * Table
+ */
+#table #columns th {
+	text-align:left;
+	background: #fafafa;
+}
+
+#table #columns th {
+	padding:4px;
+	border: 1px #ccc solid;
+	border-collapse: collapse;
+	background: #fafafa;
+}
+
+#table #columns td {
+	border-bottom: 1px #ccc solid;
+	padding:3px;
+}
+
+#table #columns td.comment {
+	color:#777;
+}
+
+#table h1 {
+	clear:both;
+}
+
+#table table#columns td.fkeys {
+	border-left: 1px #ccc solid;
+}
+
+#table table#columns ul.refs-out,#table table#columns ul.refs-in {
+	margin:0px 0px 0px 30px;
+	padding:0px;
+}
+
+#table table#columns ul.refs-out li {
+	list-style-image: url(right.png);
+}
+
+#table table#columns ul.refs-in li {
+	list-style-image: url(left.png);
+}
+
+#table table#indices tr {
+	margin: 1px;	
+}
+
+#table table#indices th {
+	padding: 5px;
+	margin: 0px;
+	width: 1%;
+	border: 1px #ccc solid;
+	text-align:left;
+}
+
+#table table#indices td {
+	padding: 5px;
+	margin: 0px;
+	border: 1px #ccc solid;
+}
+
+#table p.trigger {
+	margin:0px;
+}

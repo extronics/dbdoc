@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+  PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Reflect">
+
+	<resultMap id="databaseMap" class="dbdoc.impl.mysql.MySQLDatabase">
+		<result property="name" column="name" />
+	</resultMap>
+	
+	<select id="getDatabase" parameterClass="string" resultMap="databaseMap">
+		SELECT
+			SCHEMA_NAME AS `name`
+		FROM
+			INFORMATION_SCHEMA.SCHEMATA
+		WHERE
+			SCHEMA_NAME = #value#
+	</select>
+	
+	<resultMap id="schemasMap" class="dbdoc.impl.mysql.MySQLSchema">
+		<result property="name" column="name" />
+	</resultMap>
+
+	<select id="getSchemas" parameterClass="string" resultMap="schemasMap">
+		SELECT NULL AS `name`
+    </select>
+    
+    <resultMap id="tablesMap" class="dbdoc.impl.mysql.MySQLTable">
+		<result property="name"         column="name" />
+		<result property="type"         column="type" />
+		<result property="comment"      column="comment" />
+	</resultMap>
+    
+    <select id="getTables" parameterClass="string" resultMap="tablesMap">
+    	SELECT
+    		TABLE_NAME    AS `name`,
+    		TABLE_TYPE    AS `type`,
+    		TABLE_COMMENT AS `comment`
+    	FROM
+    		INFORMATION_SCHEMA.TABLES
+    	WHERE
+    		TABLE_SCHEMA = #value#
+    	ORDER BY
+    		TABLE_NAME
+    </select>
+    
+    <resultMap id="columnsMap" class="dbdoc.impl.mysql.MySQLColumn">
+		<result property="name"            column="name" />
+		<result property="ordinalNumber"   column="ordinal" />
+		<result property="comment"         column="comment" />
+		<result property="defaultValue"    column="default_value" />
+		<result property="nullable"        column="nullable" />
+		<result property="dataType"        column="data_type" />
+		<result property="dataLength"      column="data_length" nullValue="0" />
+		<result property="sequence"        column="is_sequence" />
+	</resultMap>
+    
+    <select id="getColumns" parameterClass="map" resultMap="columnsMap">
+    	SELECT
+    		COLUMN_NAME      AS `name`,
+    		ORDINAL_POSITION AS `ordinal`,
+    		COLUMN_DEFAULT   AS `default_value`,
+    		DATA_TYPE        AS `data_type`,
+    		COLUMN_COMMENT   AS `comment`,
+    		IFNULL(CHARACTER_MAXIMUM_LENGTH,NUMERIC_PRECISION) AS `data_length`,
+    		IF(EXTRA="auto_increment",true,false) AS `is_sequence`,
+    		IF(IS_NULLABLE="YES",true,false) AS `nullable`
+    	FROM
+    		INFORMATION_SCHEMA.COLUMNS
+    	WHERE
+    		TABLE_SCHEMA = #schema# AND TABLE_NAME = #table#
+    	ORDER BY
+    		ORDINAL_POSITION
+    </select>
+    
+    <resultMap id="constraintColumnMap" class="dbdoc.impl.DBRef">
+		<result property="table"  column="table" />
+		<result property="column" column="column" />
+	</resultMap>
+    
+    <resultMap id="constraintsMap" class="dbdoc.impl.mysql.MySQLConstraint" groupBy="name">
+    	<result property="name"       column="name" />
+    	<result property="columnRefs" resultMap="Reflect.constraintColumnMap" />
+    	<discriminator column="type" javaType="string">
+	    	<subMap value="PRIMARY KEY" resultMap="constraintsMapPK" />
+	    	<subMap value="UNIQUE"      resultMap="constraintsMapUnique" />
+	    	<subMap value="FOREIGN KEY" resultMap="constraintsMapFK" />
+    	</discriminator>
+    </resultMap>
+    
+    <resultMap id="constraintsMapPK" class="dbdoc.impl.mysql.MySQLPrimaryKey" extends="constraintsMap">
+    
+    </resultMap>
+    
+    <resultMap id="constraintsMapUnique" class="dbdoc.impl.mysql.MySQLUnique" extends="constraintsMap">
+    
+    </resultMap>
+    
+    <resultMap id="foreignKeyColumnMap" class="dbdoc.impl.DBRef">
+		<result property="database" column="foreign_database" />
+		<result property="table"    column="foreign_table" />
+		<result property="column"   column="foreign_column" />
+	</resultMap>
+    
+    <resultMap id="constraintsMapFK" class="dbdoc.impl.mysql.MySQLForeignKey" extends="constraintsMap">
+    	<result property="foreignColumnRefs" resultMap="Reflect.foreignKeyColumnMap"  />
+    </resultMap>
+    
+    <select id="getConstraints" parameterClass="map" resultMap="constraintsMap">
+    	SELECT
+    		C.TABLE_NAME AS `table`,
+    		C.CONSTRAINT_NAME AS `name`,
+    		C.CONSTRAINT_TYPE AS `type`,
+    		K.COLUMN_NAME AS `column`,
+    		K.REFERENCED_TABLE_SCHEMA AS `foreign_database`,
+    		K.REFERENCED_TABLE_NAME AS `foreign_table`,
+    		K.REFERENCED_COLUMN_NAME AS `foreign_column`
+    	FROM
+    		INFORMATION_SCHEMA.TABLE_CONSTRAINTS C LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE K ON K.TABLE_SCHEMA = C.TABLE_SCHEMA AND K.TABLE_NAME = C.TABLE_NAME AND K.CONSTRAINT_NAME = C.CONSTRAINT_NAME
+    	WHERE
+    		C.TABLE_SCHEMA = #schema# AND C.TABLE_NAME = #table#
+    </select>
+    
+     <resultMap id="indexColumnMap" class="dbdoc.impl.DBRef">
+		<result property="table"  column="Table" />
+		<result property="column" column="Column_name" />
+	</resultMap>
+    
+    <resultMap id="indexesMap" class="dbdoc.impl.mysql.MySQLIndex" groupBy="name">
+    	<result property="name" column="Key_name" />
+    	<result property="columnRefs" resultMap="Reflect.indexColumnMap" />
+    </resultMap>
+    
+    <select id="getIndexes" parameterClass="map" resultMap="indexesMap">
+    	SHOW INDEXES FROM `$schema$`.`$table$` WHERE Non_Unique = 1
+    </select>
+    
+    <resultMap id="triggersMap" class="dbdoc.impl.mysql.MySQLTrigger">
+    	<result property="tableName"     column="table" />
+    	<result property="name"          column="name" />
+    	<result property="statementType" column="statement_type" />
+    	<result property="timing"        column="timing" />
+    	<result property="body"          column="body" />
+    </resultMap>
+    
+    <select id="getTriggers" parameterClass="map" resultMap="triggersMap">
+    	SELECT
+    		EVENT_OBJECT_TABLE AS `table`,
+    		TRIGGER_NAME AS `name`,
+    		EVENT_MANIPULATION AS `statement_type`,
+    		ACTION_TIMING AS `timing`,
+    		ACTION_STATEMENT AS `body`
+    	FROM
+    		INFORMATION_SCHEMA.TRIGGERS
+    	WHERE
+    		EVENT_OBJECT_SCHEMA = #schema# AND EVENT_OBJECT_TABLE = #table#
+    	ORDER BY
+    		TRIGGER_NAME
+    </select>
+    
+    <resultMap id="proceduresMap" class="dbdoc.impl.mysql.MySQLProcedure">
+    	<result property="name"    column="name" />
+    	<result property="comment" column="comment" />
+    	<result property="body"    column="body" />
+    </resultMap>
+    
+    <select id="getProcedures" parameterClass="string" resultMap="proceduresMap">
+    	SELECT
+    		ROUTINE_NAME AS `name`,
+    		ROUTINE_COMMENT AS `comment`,
+    		ROUTINE_DEFINITION AS `body`
+    	FROM
+    		INFORMATION_SCHEMA.ROUTINES
+    	WHERE
+    		ROUTINE_SCHEMA = #value#
+    	ORDER BY
+    		ROUTINE_NAME
+    </select>
+</sqlMap>
